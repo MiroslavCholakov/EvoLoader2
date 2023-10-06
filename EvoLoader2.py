@@ -536,7 +536,7 @@ class EvoFileReader(QMainWindow):
                         gadv_textbox.insertPlainText(f"{missing[index][0]:<2} {missing[index][1]}\n")
 
                     gadv_textbox.setReadOnly(True)
-                    gadv_window.exec_()
+                    gadv_window.exec()
                 else:
                     return
             else:
