@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QComboBox, QCheckBox, QLabel, QTextEdit, QListWidget, QFileDialog, QMessageBox, QDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QComboBox, QCheckBox, QLabel, QTextEdit, QListWidget, QFileDialog, QMessageBox, QDialog, QHBoxLayout
+
 from PyQt6.QtGui import QAction, QDesktopServices
 from PyQt6.QtCore import Qt, QUrl
 import sys
@@ -86,45 +87,62 @@ class EvoFileReader(QMainWindow):
 
     def visit_website(self, website_url):
         QDesktopServices.openUrl(QUrl(website_url))
-
+        
     def setup_ui_elements(self):
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        vbox_layout = QVBoxLayout()
+        # Main layout
+        main_layout = QVBoxLayout(central_widget)
 
+        # Top layout for checkboxes, buttons, and combo box
+        top_layout = QHBoxLayout()
+
+        # Checkboxes
         self.checkbutton_max_level = QCheckBox('Max Level', self)
         self.checkbutton_max_level.stateChanged.connect(self.update_class_list)
-        vbox_layout.addWidget(self.checkbutton_max_level)
+        top_layout.addWidget(self.checkbutton_max_level)
 
         self.checkbutton_tier_4 = QCheckBox('Tier 4', self)
         self.checkbutton_tier_4.stateChanged.connect(self.update_class_list)
-        vbox_layout.addWidget(self.checkbutton_tier_4)
+        top_layout.addWidget(self.checkbutton_tier_4)
 
-        self.listbox = QListWidget(self)
-        self.listbox.currentRowChanged.connect(self.get_selected_list_item)
-        vbox_layout.addWidget(self.listbox)
+        # Spacer to push buttons and combo box to the right
+        top_layout.addStretch()
 
-        self.textbox = QTextEdit(self)
-        self.textbox.setReadOnly(True)
-        vbox_layout.addWidget(self.textbox)
-
+        # Label, ComboBox, and Buttons
         self.label = QLabel('Profile:', self)
-        vbox_layout.addWidget(self.label)
+        top_layout.addWidget(self.label)
 
         self.combo = QComboBox(self)
         self.combo.currentIndexChanged.connect(self.update_selected_profile)
-        vbox_layout.addWidget(self.combo)
+        top_layout.addWidget(self.combo)
 
         self.button_refresh = QPushButton('Refresh', self)
         self.button_refresh.clicked.connect(self.refresh)
-        vbox_layout.addWidget(self.button_refresh)
+        top_layout.addWidget(self.button_refresh)
 
         self.button_load_code = QPushButton('Load code', self)
         self.button_load_code.clicked.connect(self.copy_code)
-        vbox_layout.addWidget(self.button_load_code)
+        top_layout.addWidget(self.button_load_code)
 
-        central_widget.setLayout(vbox_layout)
+        main_layout.addLayout(top_layout)
+
+        # Bottom layout for class listbox and textbox
+        bottom_layout = QHBoxLayout()
+
+        # Listbox
+        self.listbox = QListWidget(self)
+        self.listbox.currentRowChanged.connect(self.get_selected_list_item)
+        bottom_layout.addWidget(self.listbox)
+
+        # Textbox
+        self.textbox = QTextEdit(self)
+        self.textbox.setReadOnly(True)
+        bottom_layout.addWidget(self.textbox)
+
+        main_layout.addLayout(bottom_layout)    
+
 
     def load_warcraft3_path(self):
         # Assuming that configuration.txt is in the same directory as the script
@@ -441,7 +459,23 @@ class EvoFileReader(QMainWindow):
         keyboard.press_and_release('enter')
             
     def refresh(self):
+        # Update profiles and classes
         self.update_profiles()
+
+        # Clear and update the combo box with profiles
+        self.combo.clear()
+        self.combo.addItems(self.profiles)
+
+        # Set the current profile based on the active_profile
+        if len(self.profiles) == 1:
+            self.combo.setCurrentIndex(0)
+        else:
+            index = self.combo.findText(self.active_profile)
+            if index != -1:
+                self.combo.setCurrentIndex(index)
+
+        # Update the class list
+        self.update_class_list()
         
     def get_missing_items(self, checking_for, items, missing_items):
         for material in self.RECIPES[checking_for]["materials"]:

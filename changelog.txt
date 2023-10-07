@@ -1,4 +1,6 @@
-
+v1.1
+- Rearranged GUI to resemble the old one
+- Fixed Refresh function
 
 v1.0
 - Rewrote the whole script
