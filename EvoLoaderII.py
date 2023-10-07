@@ -48,35 +48,52 @@ class EvoFileReader(QMainWindow):
 
     def setup_menu_bar(self):
         menubar = self.menuBar()
+        self.create_config_menu(menubar)
+        self.create_guides_menu(menubar)
+        self.create_help_menu(menubar)
 
-        edit_menu = menubar.addMenu('Config')
+    def visit_website(self, website_url): #function that redirects the user to the given website (usually guides)
+        try:
+            QDesktopServices.openUrl(QUrl(website_url))
+        except Exception as e:
+             self.show_error_message("Error Opening Guide", f"Guide Unavailable: {str(e)}")
+             
+
+    def create_config_menu(self, menu_bar): #Creates the Configuration menu
+        edit_menu = menu_bar.addMenu('Config')
         set_path_action = QAction('Set Warcraft3 path', self)
         set_path_action.triggered.connect(self.change_path)
         edit_menu.addAction(set_path_action)
-
+        
         close_action = QAction('Close application', self)
         close_action.triggered.connect(self.close)
         edit_menu.addAction(close_action)
-
-        links_menu = menubar.addMenu('Guides')
-        website1_action = QAction('Item & Hero Overview', self)
+        
+    def create_guides_menu(self, menu_bar): #Creates the reference to Guides from google drive
+        links_menu = menu_bar.addMenu('Guides')
+        
+        website1_action = QAction('Item and Hero Overview', self)
         website1_action.triggered.connect(lambda: self.visit_website('https://docs.google.com/spreadsheets/d/14zNW97MHv36gPqpNYqmT9otvMl2QMwdtU1pQbqJu7y4/edit#gid=131284763'))
         links_menu.addAction(website1_action)
 
-        website2_action = QAction('Class Builds', self)
+        website2_action = QAction('Imp1 and Imp2 Builds', self)
         website2_action.triggered.connect(lambda: self.visit_website('https://docs.google.com/spreadsheets/d/1Cs8I6MxSha8qqvd6Uhx12uGIdAZdE4Lt_sVSOD87_g8/edit#gid=1284668198'))
         links_menu.addAction(website2_action)
-
-        website3_action = QAction('Quickcast Guide', self)
-        website3_action.triggered.connect(lambda: self.visit_website('https://www.hiveworkshop.com/threads/custom-grid-hotkey-configuration-for-quick-cast.340352/'))
-
+        
+        website3_action = QAction('Imp3 Builds', self)
+        website3_action.triggered.connect(lambda: self.visit_website('https://docs.google.com/spreadsheets/d/1yEQB5QBiDHKHVKtGY6Vj5HagTPjuQeRst1nR0dNI89s/edit#gid=1284668198'))
         links_menu.addAction(website3_action)
 
-        help_menu = menubar.addMenu('Help')
+        website4_action = QAction('Quickcast Guide', self)
+        website4_action.triggered.connect(lambda: self.visit_website('https://www.hiveworkshop.com/threads/custom-grid-hotkey-configuration-for-quick-cast.340352/'))
+        links_menu.addAction(website4_action)
+        
+    def create_help_menu(self, menu_bar): #Adds the Godly Farm Check, changelog and about
+        help_menu = menu_bar.addMenu('Help')
         godly_check_action = QAction('Godly Farm Check', self)
         godly_check_action.triggered.connect(self.display_godly_advancement)
         help_menu.addAction(godly_check_action)
-
+        
         changelog_action = QAction('Changelog', self)
         changelog_action.triggered.connect(self.display_changelog)
         help_menu.addAction(changelog_action)
@@ -85,9 +102,6 @@ class EvoFileReader(QMainWindow):
         about_action.triggered.connect(self.display_about)
         help_menu.addAction(about_action)
 
-    def visit_website(self, website_url):
-        QDesktopServices.openUrl(QUrl(website_url))
-        
     def setup_ui_elements(self):
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
@@ -144,30 +158,40 @@ class EvoFileReader(QMainWindow):
         main_layout.addLayout(bottom_layout)    
 
 
+    def show_error_message(self, title, message):
+        QMessageBox.critical(self, title, message)
+
+
     def load_warcraft3_path(self):
         # Assuming that configuration.txt is in the same directory as the script
-        config_file_name = 'configuration.txt'
-        config_file_path = os.path.join(os.path.dirname(sys.argv[0]), config_file_name) if getattr(sys, 'frozen', False) else config_file_name
+        try:
+            config_file_name = 'configuration.txt'
+            config_file_path = os.path.join(os.path.dirname(sys.argv[0]), config_file_name) if getattr(sys, 'frozen', False) else config_file_name
+        
+            if os.path.exists(config_file_path):
+                with open(config_file_path, 'r') as file:
+                    stored_path = file.readline().strip()
 
-        if os.path.exists(config_file_path):
-            with open(config_file_path, 'r') as file:
-                stored_path = file.readline().strip()
-
-                if os.path.exists(stored_path) and os.path.isdir(stored_path):
-                    self.wc3_path = stored_path
-                    self.update_gui()
-                    return
+                    if os.path.exists(stored_path) and os.path.isdir(stored_path):
+                        self.wc3_path = stored_path
+                        self.update_gui()
+                        return
 
         # Default path if configuration.txt doesn't exist or is invalid
-        self.wc3_path = self.DEFAULT_PATH
+            self.wc3_path = self.DEFAULT_PATH
+        except Exception as e:
+            self.show_error_message("Error Loading Warcraft3 Path", f"An error occurred while loading the Warcraft3 path: {str(e)}")
         
     def save_warcraft3_path(self, path):
-        config_file_name = 'configuration.txt'
-        config_file_path = os.path.join(os.path.dirname(sys.argv[0]), config_file_name) if getattr(sys, 'frozen', False) else config_file_name
+        try:
+            config_file_name = 'configuration.txt'
+            config_file_path = os.path.join(os.path.dirname(sys.argv[0]), config_file_name) if getattr(sys, 'frozen', False) else config_file_name
 
-        with open(config_file_path, 'w') as file:
-            file.write(path)
-            
+            with open(config_file_path, 'w') as file:
+                file.write(path)
+        except Exception as e:
+            self.show_error_message("Error Saving Warcraft3 Path", f"configuration.txt not found: {str(e)}")
+    
     def change_path(self):
         new_path = QFileDialog.getExistingDirectory(self, "Select Warcraft3 Path")
         if new_path:
@@ -294,7 +318,7 @@ class EvoFileReader(QMainWindow):
             for i, stash_items in enumerate(class_info['stash_items']):
                 text = ", ".join(stash_items)
                 if text != "":
-                    self.textbox.append(f"Stash{i + 1}: {text}\n")
+                    self.textbox.append(f"\nStash{i + 1}: {text}")
 
         else:
             return
@@ -588,7 +612,6 @@ class EvoFileReader(QMainWindow):
     def display_about(self):
         QMessageBox.about(self, "About Evo File Reader", "Evo File Reader\n\nVersion: {}\n\nAuthor: MiroBG".format(self.VERSION))
 
-    @staticmethod
     
     def natural_keys(text):
         return [int(c) if c.isdigit() else c for c in re.split('(\d+)', text)]
