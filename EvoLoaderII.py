@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QComboBox, QCheckBox, QLabel, QTextEdit, QListWidget, QFileDialog, QMessageBox, QDialog, QHBoxLayout
 
-from PyQt6.QtGui import QAction, QDesktopServices
+from PyQt6.QtGui import QAction, QDesktopServices, QIcon
 from PyQt6.QtCore import Qt, QUrl
 import sys
 import os
@@ -18,7 +18,7 @@ class EvoFileReader(QMainWindow):
         self.selected_classes = []
         self.setWindowTitle("Evo File Reader")
         self.setGeometry(100, 100, 400, 400)
-        self.VERSION = "v1.1"
+        self.VERSION = "v1.2"
         self.ICON = "load.ico" if os.path.isfile("load.ico") else ""
         self.wc3_path = ""
         self.custom_commands_loaded = False
@@ -42,6 +42,8 @@ class EvoFileReader(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle(f"Evo File Reader {self.VERSION}")
+        if self.ICON:
+           self.setWindowIcon(QIcon(self.ICON))
         self.setGeometry(100, 100, self.original_width, self.original_height)
         self.setup_menu_bar()
         self.setup_ui_elements()
@@ -180,7 +182,9 @@ class EvoFileReader(QMainWindow):
         # Default path if configuration.txt doesn't exist or is invalid
             self.wc3_path = self.DEFAULT_PATH
         except Exception as e:
-            self.show_error_message("Error Loading Warcraft3 Path", f"An error occurred while loading the Warcraft3 path: {str(e)}")
+            QMessageBox.warning(self,"Error Loading Warcraft3 Path", f"An error occurred while loading the Warcraft3 path: {str(e)}")
+        self.listbox.clear()
+        self.update_gui()
         
     def save_warcraft3_path(self, path):
         try:
@@ -190,7 +194,7 @@ class EvoFileReader(QMainWindow):
             with open(config_file_path, 'w') as file:
                 file.write(path)
         except Exception as e:
-            self.show_error_message("Error Saving Warcraft3 Path", f"configuration.txt not found: {str(e)}")
+           QMessageBox.warning(self,"Error Saving Warcraft3 Path", f"configuration.txt not found: {str(e)}")
     
     def change_path(self):
         new_path = QFileDialog.getExistingDirectory(self, "Select Warcraft3 Path")
@@ -345,24 +349,24 @@ class EvoFileReader(QMainWindow):
 
             # Standardize path format
             class_folder_path = class_folder_path.replace('\\', '/')
+            if os.path.exists(class_folder_path):
+                txt_files = [file for file in os.listdir(class_folder_path) if file.endswith('.txt')]
 
-            txt_files = [file for file in os.listdir(class_folder_path) if file.endswith('.txt')]
+                # Check if there is a .txt file with the expected format
+                max_level = None
+                for txt_file in txt_files:
+                    match = re.match(r'\[Level (\d+)\]\.txt', txt_file)
+                    if match:
+                        level_from_filename = int(match.group(1))
+                        if max_level is None or level_from_filename > max_level:
+                            max_level = level_from_filename
 
-            # Check if there is a .txt file with the expected format
-            max_level = None
-            for txt_file in txt_files:
-                match = re.match(r'\[Level (\d+)\]\.txt', txt_file)
-                if match:
-                    level_from_filename = int(match.group(1))
-                    if max_level is None or level_from_filename > max_level:
-                        max_level = level_from_filename
+                # Additional filtering by max level
+                if self.checkbutton_max_level.isChecked() and max_level != 300:
+                    continue
 
-            # Additional filtering by max level
-            if self.checkbutton_max_level.isChecked() and max_level != 300:
-                continue
-
-            # Use the extracted class name from the folder
-            self.listbox.addItem(f"{extracted_class_name} [{max_level}]")
+                # Use the extracted class name from the folder
+                self.listbox.addItem(f"{extracted_class_name} [{max_level}]")
 
         self.get_selected_list_item()
 
@@ -382,6 +386,7 @@ class EvoFileReader(QMainWindow):
 
             self.update_class_list()
         except Exception as e:
+            QMessageBox.warning(self,"Error updating gui")
             return
 
     def load_config(self):
@@ -413,6 +418,7 @@ class EvoFileReader(QMainWindow):
                     wc3_names_directories.append(wc3_names_directory)
             return wc3_names_directories
         except Exception as e:
+            QMessageBox.warning(self, "Profile directories not found.")
             return []
     
     def update_profiles(self):
@@ -423,7 +429,10 @@ class EvoFileReader(QMainWindow):
 
             # List the directories (profiles) in the self.wc3_path
             profiles_list = [profile for profile in os.listdir(self.wc3_path) if os.path.isdir(os.path.join(self.wc3_path, profile))]
-
+            if not profiles_list:
+                # Display an error message if profiles list is empty
+                QMessageBox.warning(self, "Evo Files Not Found", "No profiles found in the specified path.")
+                return
             self.profiles = sorted(profiles_list)
             self.classes = {}
 
@@ -439,8 +448,12 @@ class EvoFileReader(QMainWindow):
                     class_path = os.path.join(profile_path, evo_class)
                     class_info = self.get_class_information(class_path)
                     self.classes[profile][evo_class] = class_info
+        except FileNotFoundError as e:
+            QMessageBox.warning(self, "Evo Files Not Found", f"{e}")
+            
         except Exception as e:
-            return
+            QMessageBox.warning(self, "Error Updating Profiles", f"An error occurred while updating profiles: {str(e)}")
+
         
 
     def copy_code(self):
@@ -453,53 +466,63 @@ class EvoFileReader(QMainWindow):
                 self.selected_code = self.classes[self.active_profile][selected_class]['load_code']
             else:
                 return
-            if self.selected_code is not None:
-                if len(self.selected_code) >= 124:
-                    first_half = self.selected_code[0:124]
-                    second_half = self.selected_code[124:]
-                    self.paste_code('-rp')
-                    self.paste_code('-lc')
-                    self.paste_code(first_half)
-                    self.paste_code(second_half)
-                    self.paste_code('-le')
-                    self.paste_code('-c')
-                else:
-                    self.paste_code('-rp')
-                    self.paste_code('-l ' + self.selected_code)
-                    self.paste_code('-c')
+            try:
+                if self.selected_code is not None:
+                    if len(self.selected_code) >= 124:
+                        first_half = self.selected_code[0:124]
+                        second_half = self.selected_code[124:]
+                        self.paste_code('-rp')
+                        self.paste_code('-lc')
+                        self.paste_code(first_half)
+                        self.paste_code(second_half)
+                        self.paste_code('-le')
+                        self.paste_code('-c')
+                    else:
+                        self.paste_code('-rp')
+                        self.paste_code('-l ' + self.selected_code)
+                        self.paste_code('-c')
 
-            if not self.custom_commands_loaded:
-                self.load_custom_commands()
-                self.custom_commands_loaded = True
+                if not self.custom_commands_loaded:
+                    self.load_custom_commands()
+                    self.custom_commands_loaded = True
+            except IndexError:
+                 QMessageBox.warning(self, "Warcraft III Not Running", "Warcraft III is not running.")
+            except Exception as e:
+            # Handle other exceptions
+                 QMessageBox.warning(self, "Error Pasting Code", f"An error occurred while pasting the code: {str(e)}")
         else:
             return
 
     def paste_code(self, pasted_item):
-        war3 = pyautogui.getWindowsWithTitle('Warcraft III')[0]
-        war3.activate()
+            war3 = pyautogui.getWindowsWithTitle('Warcraft III')[0]
+            war3.activate()
 
-        keyboard.press_and_release('enter')  # Press Enter to open the chat
-        keyboard.write(pasted_item)  # Type the pasted item
-        keyboard.press_and_release('enter')
+            keyboard.press_and_release('enter')  # Press Enter to open the chat
+            keyboard.write(pasted_item)  # Type the pasted item
+            keyboard.press_and_release('enter')
             
     def refresh(self):
-        # Update profiles and classes
-        self.update_profiles()
-
-        # Clear and update the combo box with profiles
-        self.combo.clear()
-        self.combo.addItems(self.profiles)
-
-        # Set the current profile based on the active_profile
-        if len(self.profiles) == 1:
-            self.combo.setCurrentIndex(0)
-        else:
-            index = self.combo.findText(self.active_profile)
-            if index != -1:
-                self.combo.setCurrentIndex(index)
-
-        # Update the class list
-        self.update_class_list()
+        try:
+            # Clear the textbox and listbox
+            self.custom_commands_loaded = False
+            self.listbox.clear()
+            self.textbox.clear()
+            # Update profiles and classes
+            self.update_profiles()
+            # Clear and update the combo box with profiles
+            self.combo.clear()
+            self.combo.addItems(self.profiles)
+            # Set the current profile based on the active_profile
+            if len(self.profiles) == 1:
+                self.combo.setCurrentIndex(0)
+            else:
+                index = self.combo.findText(self.active_profile)
+                if index != -1:
+                    self.combo.setCurrentIndex(index)
+            # Update the class list
+            self.update_class_list()
+        except Exception as e:
+            QMessageBox.warning(self, "Error Refreshing", f"An error occurred while refreshing: {str(e)}")
         
     def get_missing_items(self, checking_for, items, missing_items):
         for material in self.RECIPES[checking_for]["materials"]:
@@ -596,8 +619,10 @@ class EvoFileReader(QMainWindow):
                     gadv_textbox.setReadOnly(True)
                     gadv_window.exec()
                 else:
+                    QMessageBox.warning(self, "Class can't be found in the selected profile.")
                     return
             else:
+                QMessageBox.warning(self, "No Class Selected", "Please select a class to check Godly Farm progress.")
                 return
             
     def display_changelog(self):
@@ -615,6 +640,7 @@ class EvoFileReader(QMainWindow):
     
     def natural_keys(text):
         return [int(c) if c.isdigit() else c for c in re.split('(\d+)', text)]
+    
 class GodlyAdvancementDialog(QDialog):
     def __init__(self, selected_class, items, stash_items):
         super(GodlyAdvancementDialog, self).__init__()
