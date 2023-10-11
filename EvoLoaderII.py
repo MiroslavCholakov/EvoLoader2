@@ -504,7 +504,6 @@ class EvoFileReader(QMainWindow):
     def refresh(self):
         try:
             # Clear the textbox and listbox
-            self.custom_commands_loaded = False
             self.listbox.clear()
             self.textbox.clear()
             # Update profiles and classes
@@ -521,6 +520,7 @@ class EvoFileReader(QMainWindow):
                     self.combo.setCurrentIndex(index)
             # Update the class list
             self.update_class_list()
+            self.custom_commands_loaded = False
         except Exception as e:
             QMessageBox.warning(self, "Error Refreshing", f"An error occurred while refreshing: {str(e)}")
         
