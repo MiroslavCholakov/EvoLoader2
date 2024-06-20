@@ -90,7 +90,7 @@ class EvoFileReader(QMainWindow):
         website4_action.triggered.connect(lambda: self.visit_website('https://www.hiveworkshop.com/threads/custom-grid-hotkey-configuration-for-quick-cast.340352/'))
         links_menu.addAction(website4_action)
         
-    def create_help_menu(self, menu_bar): #Adds the Godly Farm Check, changelog and about
+    def create_help_menu(self, menu_bar):
         help_menu = menu_bar.addMenu('Help')
         godly_check_action = QAction('Godly Farm Check', self)
         godly_check_action.triggered.connect(self.display_godly_advancement)
@@ -106,12 +106,8 @@ class EvoFileReader(QMainWindow):
 
     def setup_ui_elements(self):
         central_widget = QWidget(self)
-        self.setCentralWidget(central_widget)
-
-        # Main layout
+        self.setCentralWidget(central_widget) 
         main_layout = QVBoxLayout(central_widget)
-
-        # Top layout for checkboxes, buttons, and combo box
         top_layout = QHBoxLayout()
 
         # Checkboxes
@@ -123,10 +119,10 @@ class EvoFileReader(QMainWindow):
         self.checkbutton_tier_4.stateChanged.connect(self.update_class_list)
         top_layout.addWidget(self.checkbutton_tier_4)
 
-        # Spacer to push buttons and combo box to the right
+
         top_layout.addStretch()
 
-        # Label, ComboBox, and Buttons
+
         self.label = QLabel('Profile:', self)
         top_layout.addWidget(self.label)
 
@@ -144,15 +140,13 @@ class EvoFileReader(QMainWindow):
 
         main_layout.addLayout(top_layout)
 
-        # Bottom layout for class listbox and textbox
+
         bottom_layout = QHBoxLayout()
 
-        # Listbox
         self.listbox = QListWidget(self)
         self.listbox.currentRowChanged.connect(self.get_selected_list_item)
         bottom_layout.addWidget(self.listbox)
 
-        # Textbox
         self.textbox = QTextEdit(self)
         self.textbox.setReadOnly(True)
         bottom_layout.addWidget(self.textbox)
@@ -165,7 +159,7 @@ class EvoFileReader(QMainWindow):
 
 
     def load_warcraft3_path(self):
-        # Assuming that configuration.txt is in the same directory as the script
+
         try:
             config_file_name = 'configuration.txt'
             config_file_path = os.path.join(os.path.dirname(sys.argv[0]), config_file_name) if getattr(sys, 'frozen', False) else config_file_name
@@ -179,7 +173,7 @@ class EvoFileReader(QMainWindow):
                         self.update_gui()
                         return
 
-        # Default path if configuration.txt doesn't exist or is invalid
+
             self.wc3_path = self.DEFAULT_PATH
         except Exception as e:
             QMessageBox.warning(self,"Error Loading Warcraft3 Path", f"An error occurred while loading the Warcraft3 path: {str(e)}")
@@ -259,7 +253,7 @@ class EvoFileReader(QMainWindow):
         result = {
             'gold': gold,
             'shards': shards,
-            'load_code': load_code,  # Add the 'code' information to the result dictionary
+            'load_code': load_code, 
             'items': items,
             'stash_items': stash_items,
             'filename': os.path.basename(txt_file_path)
@@ -340,8 +334,7 @@ class EvoFileReader(QMainWindow):
             if self.checkbutton_tier_4.isChecked() and class_name not in self.MAX_TIER:
                 continue
 
-            # Extract class name from folder name
-            # Modified line to extract class name without level
+
             extracted_class_name = re.sub(r'\s*\[\d+\]$', '', class_name)
 
             # Look for .txt files in the class folder
@@ -365,7 +358,7 @@ class EvoFileReader(QMainWindow):
                 if self.checkbutton_max_level.isChecked() and max_level != 300:
                     continue
 
-                # Use the extracted class name from the folder
+
                 self.listbox.addItem(f"{extracted_class_name} [{max_level}]")
 
         self.get_selected_list_item()
@@ -423,14 +416,12 @@ class EvoFileReader(QMainWindow):
     
     def update_profiles(self):
         try:
-            # Check if the path exists
             if not os.path.exists(self.wc3_path):
                 raise FileNotFoundError(f"Profiles path not found: {self.wc3_path}")
 
             # List the directories (profiles) in the self.wc3_path
             profiles_list = [profile for profile in os.listdir(self.wc3_path) if os.path.isdir(os.path.join(self.wc3_path, profile))]
             if not profiles_list:
-                # Display an error message if profiles list is empty
                 QMessageBox.warning(self, "Evo Files Not Found", "No profiles found in the specified path.")
                 return
             self.profiles = sorted(profiles_list)
@@ -497,28 +488,24 @@ class EvoFileReader(QMainWindow):
             war3 = pyautogui.getWindowsWithTitle('Warcraft III')[0]
             war3.activate()
 
-            keyboard.press_and_release('enter')  # Press Enter to open the chat
-            keyboard.write(pasted_item)  # Type the pasted item
+            keyboard.press_and_release('enter')
+            keyboard.write(pasted_item) 
             keyboard.press_and_release('enter')
             
     def refresh(self):
         try:
-            # Clear the textbox and listbox
             self.listbox.clear()
             self.textbox.clear()
-            # Update profiles and classes
             self.update_profiles()
-            # Clear and update the combo box with profiles
             self.combo.clear()
             self.combo.addItems(self.profiles)
-            # Set the current profile based on the active_profile
+
             if len(self.profiles) == 1:
                 self.combo.setCurrentIndex(0)
             else:
                 index = self.combo.findText(self.active_profile)
                 if index != -1:
                     self.combo.setCurrentIndex(index)
-            # Update the class list
             self.update_class_list()
             self.custom_commands_loaded = False
         except Exception as e:
@@ -565,9 +552,7 @@ class EvoFileReader(QMainWindow):
                             'items': [re.sub(r'\|c[0-9A-Fa-f]{8}', '', item) for item in class_info['items']],
                             'stash_items': class_info['stash_items'],
                         }
-                        # Update the GUI with the information
                         self.update_information(selected_class)
-                        # Print the updated class_list for the specific class
                     else:
                         return
                   
@@ -583,7 +568,7 @@ class EvoFileReader(QMainWindow):
     def display_godly_advancement(self):
             gadv_window = QDialog(self)
             main_window_rect = self.geometry()
-            gadv_window_x = main_window_rect.x() + main_window_rect.width() + 10  # Adjust the offset as needed
+            gadv_window_x = main_window_rect.x() + main_window_rect.width() + 10 
             gadv_window_y = main_window_rect.y()
             gadv_window.setGeometry(gadv_window_x, gadv_window_y, 300, 400)
             gadv_window.setWindowTitle("Godly progress")
@@ -606,7 +591,6 @@ class EvoFileReader(QMainWindow):
 
                     missing_items = self.get_missing_items("Godly", items, [])
 
-                    # replace scrap for simplification
                     for i in range(len(missing_items)):
                         if missing_items[i] in ["Mythical Weapon Piece", "Mythical Handle Piece", "Mythical Armor Piece"]:
                             missing_items[i] = "Godly Material"
@@ -657,7 +641,6 @@ class GodlyAdvancementDialog(QDialog):
 
         missing_items = EvoFileReader().get_missing_items("Godly", items, stash_items)
 
-        # Replace scrap for simplification
         for i in range(len(missing_items)):
             if missing_items[i] in ["Mythical Weapon Piece", "Mythical Handle Piece", "Mythical Armor Piece"]:
                 missing_items[i] = "Godly Material"
