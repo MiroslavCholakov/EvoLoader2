@@ -4,7 +4,7 @@ MAX_TIER = [
             "Annihilator", "Arch Sage", "Avenger", "Champion", "Dark Arch Templar", "Demon Incarnate",
 			"Grand Inquisitor", "Grand Templar", "Hierophant", "Jounin", "Lightbinder", "Light Caster",
 			"Master Stalker", "Monster Hunter", "Mystic", "Phantom Assassin", "Professional Witcher", "Prophetess",
-			"Rune Master", "Sky Sorceress", "Sniper", "Stargazer", "Summoner", "White Wizard", "Valkyrie"]
+			"Rune Master", "Sky Sorceress", "Sniper", "Stargazer", "Summoner", "White Wizard", "Valkyrie",]
 default_properties = {
             'gold': 0,
             'shards': 0,
@@ -84,6 +84,10 @@ ALL_CLASS_LIST = {
             "Acolyte (F)": default_properties.copy(),
             "Cleric (F)": default_properties.copy(),
             "Valkyrie": default_properties.copy(),
+            "Fairy": default_properties.copy(),
+            "Sprite": default_properties.copy(),
+            "Astronomer": default_properties.copy(),
+            "Constellation": default_properties.copy(),
         }
         
 RECIPES = {
