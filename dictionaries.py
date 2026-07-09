@@ -4,7 +4,9 @@ MAX_TIER = [
             "Annihilator", "Arch Sage", "Avenger", "Champion", "Dark Arch Templar", "Demon Incarnate",
 			"Grand Inquisitor", "Grand Templar", "Hierophant", "Jounin", "Lightbinder", "Light Caster",
 			"Master Stalker", "Monster Hunter", "Mystic", "Phantom Assassin", "Professional Witcher", "Prophetess",
-			"Rune Master", "Sky Sorceress", "Sniper", "Stargazer", "Summoner", "White Wizard", "Valkyrie",]
+			"Rune Master", "Sky Sorceress", "Sniper", "Stargazer", "Summoner", "White Wizard", "Valkyrie", "Demoness", "Elementalist",
+            "Elemental Arbiter", "Shadowveil Dancer", "Paladin", "Ancient Guardian", "Corrupted Ancient", "Dryad Matriarch", 
+            "Aether Priest", "Celestara", ]
 default_properties = {
             'gold': 0,
             'shards': 0,
@@ -87,7 +89,20 @@ ALL_CLASS_LIST = {
             "Fairy": default_properties.copy(),
             "Sprite": default_properties.copy(),
             "Astronomer": default_properties.copy(),
-            "Constellation": default_properties.copy(),
+            "Demoness": default_properties.copy(),
+            "Elementalist": default_properties.copy(),
+            "Elemental Arbiter": default_properties.copy(),
+            "Shadowveil Dancer": default_properties.copy(),
+            "Paladin": default_properties.copy(),
+            "Ancient Guardian": default_properties.copy(),
+            "Corrupted Ancient": default_properties.copy(),
+            "Dryad Matriarch": default_properties.copy(),
+            "Aether Priest": default_properties.copy(),
+            "Celestara": default_properties.copy(),
+            "Wisp": default_properties.copy(),
+            "Verdant Wisp": default_properties.copy(),
+            "Treant": default_properties.copy(),
+            "Dryad": default_properties.copy(),
         }
         
 RECIPES = {

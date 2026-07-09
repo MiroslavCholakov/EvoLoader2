@@ -1,3 +1,11 @@
+v1.3
+- Reworked Warcraft III folder structure handling for improved map/profile detection
+- Added support for selecting multiple Twilight map versions
+- Improved computability with different Twilight save formats
+
+v1.2
+- Added support for Twilight Ascendant new classes
+
 v1.1
 - Rearranged GUI to resemble the old one
 - Fixed Refresh function
