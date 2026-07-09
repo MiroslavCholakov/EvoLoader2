@@ -23,7 +23,7 @@ Latest version:
 
 1\. Download the latest `.rar`
 
-2\. Extract it anywhere
+2\. Extract it anywhere ( Preferably not on C:\ if on Windows)
 
 3\. Run `EvoLoaderII.exe`
 
