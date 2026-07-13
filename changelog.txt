@@ -1,3 +1,6 @@
+v1.4
+- Added support for Dryad Archer in Twilight Eve Ascended
+
 v1.3
 - Reworked Warcraft III folder structure handling for improved map/profile detection
 - Added support for selecting multiple Twilight map versions
