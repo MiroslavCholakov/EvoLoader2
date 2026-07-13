@@ -6,7 +6,7 @@ MAX_TIER = [
 			"Master Stalker", "Monster Hunter", "Mystic", "Phantom Assassin", "Professional Witcher", "Prophetess",
 			"Rune Master", "Sky Sorceress", "Sniper", "Stargazer", "Summoner", "White Wizard", "Valkyrie", "Demoness", "Elementalist",
             "Elemental Arbiter", "Shadowveil Dancer", "Paladin", "Ancient Guardian", "Corrupted Ancient", "Dryad Matriarch", 
-            "Aether Priest", "Celestara", ]
+            "Aether Priest", "Celestara", "Dryad Archer",]
 default_properties = {
             'gold': 0,
             'shards': 0,
@@ -103,6 +103,7 @@ ALL_CLASS_LIST = {
             "Verdant Wisp": default_properties.copy(),
             "Treant": default_properties.copy(),
             "Dryad": default_properties.copy(),
+            "Dryad Archer": default_properties.copy(),
         }
         
 RECIPES = {
