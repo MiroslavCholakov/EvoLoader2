@@ -13,7 +13,7 @@ Now works with all Twilight maps :)
 
 Latest version:
 
-\[Download EvoLoaderII v1.3](https://github.com/MiroslavCholakov/EvoLoader2/releases/tag/TeveEvo )]
+\[Download EvoLoaderII Latest Version](https://github.com/MiroslavCholakov/EvoLoader2/releases/ )]
 
 
 
@@ -23,7 +23,7 @@ Latest version:
 
 1\. Download the latest `.rar`
 
-2\. Extract it anywhere
+2\. Extract it anywhere ( Preferably not on C:\ if on Windows)
 
 3\. Run `EvoLoaderII.exe`
 
