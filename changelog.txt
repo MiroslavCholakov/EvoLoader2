@@ -1,18 +1,18 @@
 v1.4
-- Added support for Dryad Archer in Twilight Eve Ascended
+- Added support for Dryad Archer in Twilight Eve Ascended.
 
 v1.3
-- Reworked Warcraft III folder structure handling for improved map/profile detection
-- Added support for selecting multiple Twilight map versions
-- Improved computability with different Twilight save formats
+- Reworked Warcraft III folder structure handling for improved map/profile detection.
+- Added support for selecting multiple Twilight map versions.
+- Improved computability with different Twilight save formats.
 
 v1.2
-- Added support for Twilight Ascendant new classes
+- Added support for Twilight Ascendant new classes.
 
 v1.1
-- Rearranged GUI to resemble the old one
-- Fixed Refresh function
+- Rearranged GUI to resemble the old one.
+- Fixed Refresh function.
 
 v1.0
-- Rewrote the whole script
-- Replaced GUI
+- Rewrote the whole script.
+- Replaced GUI.
