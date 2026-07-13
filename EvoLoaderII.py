@@ -22,7 +22,7 @@ class EvoFileReader(QMainWindow):
         self.selected_classes = []
         self.setWindowTitle("Evo File Reader")
         self.setGeometry(100, 100, 400, 400)
-        self.VERSION = "v1.3"
+        self.VERSION = "v1.4"
         icon_path = os.path.join(APP_DIR, "load.ico")
         self.ICON = icon_path if os.path.isfile(icon_path) else ""
         self.wc3_path = ""
