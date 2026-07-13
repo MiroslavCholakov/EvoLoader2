@@ -13,7 +13,7 @@ Now works with all Twilight maps :)
 
 Latest version:
 
-\[Download EvoLoaderII Latest Version](https://github.com/MiroslavCholakov/EvoLoader2/releases/)]
+\[Download EvoLoaderII Latest Version](https://github.com/MiroslavCholakov/EvoLoader2/releases/ )]
 
 
 
